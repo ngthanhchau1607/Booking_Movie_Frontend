@@ -1,15 +1,14 @@
-﻿import {useState, useEffect} from "react";
-import {format, addMinutes} from 'date-fns';
+﻿﻿import { useState, useEffect } from "react";
+import { addMinutes } from 'date-fns';
 import styled from "styled-components";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ScreeningModal from "../../modal/ScreeningModal.jsx";
 import ConfirmDelete from "../../modal/ConfirmDelete.jsx";
-import UpdateShowtime from "../../modal/UpdateShowtime.jsx";
 import Loading from "../../utils/Loading.jsx";
 import axios from "axios";
 
-const apiGetShowTime = import.meta.env.VITE_API_SHOW_TIME_URL
+const apiGetShowTime = import.meta.env.VITE_API_SHOW_TIME_URL;
 
 function MovieScreenings() {
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -18,7 +17,6 @@ function MovieScreenings() {
     const [loading, setLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedScreeningId, setSelectedScreeningId] = useState(null);
-    const [showModalUpdate, setShowModalUpdate] = useState(false);  // State để hiển thị modal UpdateShowtime
 
     const fetchScreenings = async () => {
         try {
@@ -40,7 +38,6 @@ function MovieScreenings() {
         }
     };
 
-
     useEffect(() => {
         fetchScreenings();
     }, [selectedDate]);
@@ -58,30 +55,23 @@ function MovieScreenings() {
     };
 
     const handleDeleteScreening = (id) => {
-        setSelectedScreeningId(id); // Lưu ID của buổi chiếu cần xóa
-        setShowDeleteModal(true); // Hiển thị modal xác nhận xóa
+        setSelectedScreeningId(id);
+        setShowDeleteModal(true);
     };
 
     const handleConfirmDelete = async () => {
         try {
-            console.log("Gui gi day", selectedScreeningId);
             await axios.delete(`${apiGetShowTime}${selectedScreeningId}`);
-            fetchScreenings();  // Sau khi xóa, lấy lại danh sách buổi chiếu
-            setShowDeleteModal(false);  // Đóng modal xác nhận
+            fetchScreenings();
+            setShowDeleteModal(false);
         } catch (error) {
             console.error("Lỗi khi xóa buổi chiếu:", error);
-            console.log("Đã nhận lỗi khi gửi yêu cầu", error.response?.data);  // In thông tin lỗi từ server nếu có
         }
-    };
-
-    const handleEditScreening = (id) => {
-        setSelectedScreeningId(id); // Lưu ID của buổi chiếu cần chỉnh sửa
-        setShowModalUpdate(true);  // Mở modal UpdateShowtime
     };
 
     return (
         <>
-            {loading && <Loading/>}
+            {loading && <Loading />}
             <Container>
                 <CreateButton onClick={handleCreateClick}>Create a Movie Show</CreateButton>
                 <h2>List Of Movie Screenings</h2>
@@ -96,73 +86,59 @@ function MovieScreenings() {
                 </DatePickerContainer>
                 <ScreeningsTable>
                     <thead>
-                    <tr>
-                        <th>Branch</th>
-                        <th>Address</th>
-                        <th>Screening Room</th>
-                        <th>Movie Name</th>
-                        <th>Start Time</th>
-                        <th>Duration</th>
-                        <th>End Time</th>
-                        <th>Number of Seats</th>
-                        <th>Action</th>
-                    </tr>
+                        <tr>
+                            <th>Branch</th>
+                            <th>Address</th>
+                            <th>Screening Room</th>
+                            <th>Movie Name</th>
+                            <th>Start Time</th>
+                            <th>Duration</th>
+                            <th>End Time</th>
+                            <th>Number of Seats</th>
+                            <th>Action</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {screeningsList.length > 0 ? (
-                        screeningsList.map((show, index) => (
-                            <tr key={index}>
-                                <td>{show.branch_id ? show.branch_id.branch_name : "N/A"}</td>
-                                <td>{show.branch_id ? show.branch_id.address : "N/A"}</td>
-                                <td>{show.screen ? show.screen.screen_name : "N/A"}</td>
-                                <td>{show.film_id ? show.film_id.film_name : "N/A"}</td>
-                                <td>{show.start_time ? new Date(show.start_time).toISOString().substring(11, 16) : "N/A"}</td>
-                                <td>{show.duration || "N/A"}</td>
-                                <td>
-                                    {show.start_time
-                                        ? (addMinutes(new Date(show.start_time), show.duration || 0)).toISOString().substring(11, 16)
-                                        : "N/A"}
-                                </td>
-                                <td>{show.screen ? show.screen.total_seat : "N/A"}</td>
-                                <td>
-                                    <ButtonContainer>
-                                    <EditButton onClick={() => handleEditScreening(show._id)}>
-                                            Edit
-                                        </EditButton>
-                                        <DeleteButton onClick={() => handleDeleteScreening(show._id)}>
-                                            Xóa
-                                        </DeleteButton>
-                                    </ButtonContainer>
-                                </td>
-
+                        {screeningsList.length > 0 ? (
+                            screeningsList.map((show, index) => (
+                                <tr key={index}>
+                                    <td>{show.branch_id ? show.branch_id.branch_name : "N/A"}</td>
+                                    <td>{show.branch_id ? show.branch_id.address : "N/A"}</td>
+                                    <td>{show.screen ? show.screen.screen_name : "N/A"}</td>
+                                    <td>{show.film_id ? show.film_id.film_name : "N/A"}</td>
+                                    <td>{show.start_time ? new Date(show.start_time).toISOString().substring(11, 16) : "N/A"}</td>
+                                    <td>{show.duration || "N/A"}</td>
+                                    <td>
+                                        {show.start_time
+                                            ? (addMinutes(new Date(show.start_time), show.duration || 0)).toISOString().substring(11, 16)
+                                            : "N/A"}
+                                    </td>
+                                    <td>{show.screen ? show.screen.total_seat : "N/A"}</td>
+                                    <td>
+                                        <ButtonContainer>
+                                            <DeleteButton onClick={() => handleDeleteScreening(show._id)}>
+                                                Xóa
+                                            </DeleteButton>
+                                        </ButtonContainer>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="9">Không có buổi chiếu nào cho ngày này.</td>
                             </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="9">Không có buổi chiếu nào cho ngày này.</td>
-                        </tr>
-                    )}
+                        )}
                     </tbody>
                 </ScreeningsTable>
                 {showModal && (
-                    <ScreeningModal onClose={handleCloseModal} onRefresh={fetchScreenings} data={screeningsList}/>
+                    <ScreeningModal onClose={handleCloseModal} onRefresh={fetchScreenings} data={screeningsList} />
                 )}
-            </Container> 
-            
-            {/* Hiển thị ConfirmDelete modal khi showDeleteModal = true */}
+            </Container>
+
             {showDeleteModal && (
                 <ConfirmDelete
-                    onClose={() => setShowDeleteModal(false)} // Đóng modal
-                    onSubmit={handleConfirmDelete} // Xác nhận xóa
-                />
-            )}
-
-            {/* Modal cập nhật buổi chiếu */}
-            {showModalUpdate &&  (
-                <UpdateShowtime 
-                    onClose={() => setShowModalUpdate(false)} 
-                    onRefresh={fetchScreenings} 
-                    screeningId={selectedScreeningId} // Truyền ID vào modal
+                    onClose={() => setShowDeleteModal(false)}
+                    onSubmit={handleConfirmDelete}
                 />
             )}
         </>
@@ -201,6 +177,7 @@ const ScreeningsTable = styled.table`
         background-color: #f2f2f2;
     }
 `;
+
 const CreateButton = styled.button`
     background-color: #4CAF50;
     color: white;
@@ -227,14 +204,7 @@ const DeleteButton = styled.button`
     }
 `;
 
-const EditButton = styled.button`
-    padding: 5px 10px;
-    background-color: orange;
-    color: white;
-    cursor: pointer;
-`;
-
 const ButtonContainer = styled.div`
     display: flex;
-    gap: 10px;  // Tạo khoảng cách giữa các nút
+    gap: 10px;
 `;
