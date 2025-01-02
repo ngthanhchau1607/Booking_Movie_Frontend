@@ -1,22 +1,19 @@
-﻿﻿import { useState, useEffect } from "react";
-import { addMinutes } from 'date-fns';
+﻿﻿﻿import {useState, useEffect} from "react";
+import {format, addMinutes} from 'date-fns';
 import styled from "styled-components";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ScreeningModal from "../../modal/ScreeningModal.jsx";
-import ConfirmDelete from "../../modal/ConfirmDelete.jsx";
 import Loading from "../../utils/Loading.jsx";
 import axios from "axios";
 
-const apiGetShowTime = import.meta.env.VITE_API_SHOW_TIME_URL;
+const apiGetShowTime = import.meta.env.VITE_API_SHOW_TIME_URL
 
 function MovieScreenings() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showModal, setShowModal] = useState(false);
     const [screeningsList, setScreeningsList] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedScreeningId, setSelectedScreeningId] = useState(null);
 
     const fetchScreenings = async () => {
         try {
@@ -38,6 +35,7 @@ function MovieScreenings() {
         }
     };
 
+
     useEffect(() => {
         fetchScreenings();
     }, [selectedDate]);
@@ -54,24 +52,9 @@ function MovieScreenings() {
         setShowModal(false);
     };
 
-    const handleDeleteScreening = (id) => {
-        setSelectedScreeningId(id);
-        setShowDeleteModal(true);
-    };
-
-    const handleConfirmDelete = async () => {
-        try {
-            await axios.delete(`${apiGetShowTime}${selectedScreeningId}`);
-            fetchScreenings();
-            setShowDeleteModal(false);
-        } catch (error) {
-            console.error("Lỗi khi xóa buổi chiếu:", error);
-        }
-    };
-
     return (
         <>
-            {loading && <Loading />}
+            {loading && <Loading/>}
             <Container>
                 <CreateButton onClick={handleCreateClick}>Create a Movie Show</CreateButton>
                 <h2>List Of Movie Screenings</h2>
@@ -86,61 +69,46 @@ function MovieScreenings() {
                 </DatePickerContainer>
                 <ScreeningsTable>
                     <thead>
-                        <tr>
-                            <th>Branch</th>
-                            <th>Address</th>
-                            <th>Screening Room</th>
-                            <th>Movie Name</th>
-                            <th>Start Time</th>
-                            <th>Duration</th>
-                            <th>End Time</th>
-                            <th>Number of Seats</th>
-                            <th>Action</th>
-                        </tr>
+                    <tr>
+                        <th>Branch</th>
+                        <th>Address</th>
+                        <th>Screening Room</th>
+                        <th>Movie Name</th>
+                        <th>Start Time</th>
+                        <th>Duration</th>
+                        <th>End Time</th>
+                        <th>Number of Seats</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {screeningsList.length > 0 ? (
-                            screeningsList.map((show, index) => (
-                                <tr key={index}>
-                                    <td>{show.branch_id ? show.branch_id.branch_name : "N/A"}</td>
-                                    <td>{show.branch_id ? show.branch_id.address : "N/A"}</td>
-                                    <td>{show.screen ? show.screen.screen_name : "N/A"}</td>
-                                    <td>{show.film_id ? show.film_id.film_name : "N/A"}</td>
-                                    <td>{show.start_time ? new Date(show.start_time).toISOString().substring(11, 16) : "N/A"}</td>
-                                    <td>{show.duration || "N/A"}</td>
-                                    <td>
-                                        {show.start_time
-                                            ? (addMinutes(new Date(show.start_time), show.duration || 0)).toISOString().substring(11, 16)
-                                            : "N/A"}
-                                    </td>
-                                    <td>{show.screen ? show.screen.total_seat : "N/A"}</td>
-                                    <td>
-                                        <ButtonContainer>
-                                            <DeleteButton onClick={() => handleDeleteScreening(show._id)}>
-                                                Xóa
-                                            </DeleteButton>
-                                        </ButtonContainer>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="9">Không có buổi chiếu nào cho ngày này.</td>
+                    {screeningsList.length > 0 ? (
+                        screeningsList.map((show, index) => (
+                            <tr key={index}>
+                                <td>{show.branch_id ? show.branch_id.branch_name : "N/A"}</td>
+                                <td>{show.branch_id ? show.branch_id.address : "N/A"}</td>
+                                <td>{show.screen ? show.screen.screen_name : "N/A"}</td>
+                                <td>{show.film_id ? show.film_id.film_name : "N/A"}</td>
+                                <td>{show.start_time ? new Date(show.start_time).toISOString().substring(11, 16) : "N/A"}</td>
+                                <td>{show.duration || "N/A"}</td>
+                                <td>
+                                    {show.start_time
+                                        ? (addMinutes(new Date(show.start_time), show.duration || 0)).toISOString().substring(11, 16)
+                                        : "N/A"}
+                                </td>
+                                <td>{show.screen ? show.screen.total_seat : "N/A"}</td>
                             </tr>
-                        )}
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="9">Không có buổi chiếu nào cho ngày này.</td>
+                        </tr>
+                    )}
                     </tbody>
                 </ScreeningsTable>
                 {showModal && (
-                    <ScreeningModal onClose={handleCloseModal} onRefresh={fetchScreenings} data={screeningsList} />
+                    <ScreeningModal onClose={handleCloseModal} onRefresh={fetchScreenings} data={screeningsList}/>
                 )}
             </Container>
-
-            {showDeleteModal && (
-                <ConfirmDelete
-                    onClose={() => setShowDeleteModal(false)}
-                    onSubmit={handleConfirmDelete}
-                />
-            )}
         </>
     );
 }
@@ -177,7 +145,6 @@ const ScreeningsTable = styled.table`
         background-color: #f2f2f2;
     }
 `;
-
 const CreateButton = styled.button`
     background-color: #4CAF50;
     color: white;
@@ -190,21 +157,4 @@ const CreateButton = styled.button`
     &:hover {
         background-color: #45a049;
     }
-`;
-
-const DeleteButton = styled.button`
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 5px;
-    &:hover {
-        background-color: #c82333;
-    }
-`;
-
-const ButtonContainer = styled.div`
-    display: flex;
-    gap: 10px;
 `;
